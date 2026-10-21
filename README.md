@@ -1,239 +1,324 @@
-# Next Word Prediction System — Web Application
-
-A production-style web application that serves **trained next-word
-prediction models** (TensorFlow / Keras) over a REST API with a Bootstrap
-frontend. Three recurrent architectures — **SimpleRNN, GRU, and LSTM** — are
-trained on the same corpus with identical preprocessing and can be selected
-per request; a comparison table (accuracy / perplexity / params / speed) is
-produced by the training script. An optional DistilGPT2 script
-(`notebooks/distilgpt2_compare.py`) provides a modern-transformer reference
-point. It converts the experimentation notebook (`NX-NLP-2026-014`) into a
-modular, deployable service.
-
-The app **does not retrain** anything — it loads the existing trained
-`.keras` model and pickled tokenizer and reproduces the notebook's
-preprocessing, top-k prediction, and temperature-sampling logic exactly.
+# ✍️ Next-Word Prediction System — Intelligent NLP Web Application
 
 ---
 
-## Features
+## 🚀 Live Application
 
-- Enter a sentence/phrase and **predict the next word**
-- **Switch between LSTM / GRU / SimpleRNN** per request (UI dropdown or
-  `"model"` field in the API); `GET /models` lists what's available
-- **Top-k predictions** with probabilities (k = 3 / 5 / 10)
-- **Multi-word text generation** from a seed
-- Adjustable **temperature** (0 = greedy, higher = more creative)
-- REST API with automatic **OpenAPI docs** at `/docs`
-- Bootstrap single-page UI
-- Dockerfile + Render/Railway configs for deployment
-- Test suite that runs **without TensorFlow** (fakes) plus real-artifact readiness
+🔗 [Next-Word Prediction Live Demo](https://www.google.com/search?q=https://your-live-demo-url.onrender.com)
 
 ---
 
-## Project layout
+## 📖 Overview
+
+**Next-Word Prediction System** is an advanced natural language processing (NLP) application designed to predict subsequent words and generate fluent text continuations based on deep learning sequence models.
+
+The system incorporates three distinct recurrent neural network architectures trained on an identical text corpus with rigorous preprocessing:
+
+* 🧠 **LSTM (Long Short-Term Memory)** — Default architecture optimized for long-range dependencies
+* 🔄 **GRU (Gated Recurrent Unit)** — Balanced architecture offering fast training and high efficiency
+* ⚡ **SimpleRNN** — Baseline recurrent architecture for comparative performance
+
+Instead of retraining on the fly, the application loads pre-trained `.keras` model artifacts and pickled tokenizers, ensuring instantaneous response times and faithful reproduction of notebook preprocessing, top-$k$ prediction, and temperature-sampling logic.
+
+---
+
+## ✨ Features
+
+* **Next-Word Prediction:** Input any sentence or phrase to predict the top-$k$ most probable next words with associated confidence probabilities.
+* **Dynamic Model Switching:** Switch seamlessly between LSTM, GRU, and SimpleRNN architectures per request via the UI dropdown or API field.
+* **Multi-Word Text Generation:** Generate extended token continuations from an arbitrary text seed.
+* **Adjustable Temperature Sampling:** Control output creativity ($T = 0$ for greedy deterministic decoding, higher values for diverse sampling).
+* **Interactive REST API:** Automatic OpenAPI documentation and interactive testing via `/docs` (Swagger UI).
+* **Modern Bootstrap UI:** Clean, responsive single-page interface for seamless user interaction.
+* **Containerised Deployment:** Fully configured with Docker, Render, and Railway configuration files.
+* **Robust Test Suite:** Comprehensive `pytest` coverage running with real-artifact readiness and mocked test support.
+
+---
+
+## ⚙️ How It Works
+
+```text
+                  USER INPUT
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │  Web UI / FastAPI REST  │
+         └────────────┬────────────┘
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │    Text Normalisation   │
+         │   & Tokenizer Lookup    │
+         └────────────┬────────────┘
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │   Sequence Padding      │
+         │   (Context Length = N)  │
+         └────────────┬────────────┘
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │  Selected Model Artifact│
+         │ (LSTM / GRU / SimpleRNN)│
+         └────────────┬────────────┘
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │ Softmax Output & Top-K  │
+         │ & Temperature Sampling  │
+         └────────────┬────────────┘
+                      │
+                      ▼
+         ┌─────────────────────────┐
+         │    JSON API Response    │
+         └─────────────────────────┘
 
 ```
+
+---
+
+## 🏗️ Project Architecture & Layout
+
+```text
 next_word_predictor/
 ├── app/
-│   ├── main.py              # FastAPI entrypoint (app instance)
-│   ├── routes/              # /predict, /generate, /health
-│   ├── services/            # predictor.py (predict_next_word, generate_text)
-│   ├── models/              # model_loader, tokenizer_loader, schemas
-│   ├── utils/               # text_cleaner, text_normalizer
-│   └── config/              # settings.py
-├── static/                  # css/, js/
-├── templates/               # index.html
-├── notebooks/               # export_artifacts.py (save model/tokenizer/config)
-├── saved_models/            # <- put .keras + tokenizer.pkl + config.json here
-├── data/                    # optional Articles.csv sample
-├── tests/                   # pytest suite
-├── requirements.txt
-├── Dockerfile / Procfile / render.yaml
-└── README.md
-```
+│   ├── main.py              # FastAPI application entrypoint
+│   ├── routes/              # API route handlers (/predict, /generate, /health, /models)
+│   ├── services/            # Predictor logic (predict_next_word, generate_text)
+│   ├── models/              # Model loaders, tokenizer loader, and Pydantic schemas
+│   ├── utils/               # Text cleaning and normalisation utilities
+│   └── config/              # Application settings and environment variables
+├── static/                  # Frontend assets (CSS stylesheets, client-side JS)
+├── templates/               # HTML single-page interface (index.html)
+├── notebooks/               # Training scripts and artifact export utilities
+├── saved_models/            # Directory for trained .keras models, tokenizer.pkl, config.json
+├── data/                    # Corpus data files (e.g., Articles.csv sample)
+├── tests/                   # Pytest automated test suite
+├── requirements.txt         # Pinned python dependencies
+├── Dockerfile               # Container build instructions
+├── Procfile                 # Railway / Heroku process configuration
+├── render.yaml              # Render cloud deployment blueprint
+└── README.md                # Project documentation
 
-> **Naming note.** Python cannot have both a top-level `app.py` module and an
-> `app/` package (the package shadows the module). The runnable entrypoint
-> therefore lives at **`app/main.py`**, launched with `uvicorn app.main:app`.
+```
 
 ---
 
-## 1. Installation
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
 
 ```bash
-# clone / unzip, then:
-cd next_word_predictor
+git clone https://github.com/Abdulla-B-Official/Next-Word-Prediction-System.git
+cd Next-Word-Prediction-System
 
+```
+
+### 2. Create and Activate Virtual Environment
+
+```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
-pip install -r requirements.txt
 ```
 
-> **Trained models are already bundled** in `saved_models/` (LSTM, GRU, RNN +
-> tokenizer/config). You do **not** need to train anything — go straight to
-> section 2 to run the app.
+### 3. Install Dependencies
 
-> ⚠️ **Keras version matters.** The `.keras` artifacts were exported with
-> **Keras 3.13.2**. `requirements.txt` therefore pins both `tensorflow==2.16.1`
-> **and** `keras==3.13.2`. Installing TensorFlow alone pulls Keras 3.0.5, which
-> **cannot** read these artifacts and produces the "model not loaded" error.
-> Always install via `pip install -r requirements.txt`.
-
-### Train the models
+> ⚠️ **Important Note on Keras Version:** The `.keras` artifacts were trained and exported using **Keras 3.13.2**. `requirements.txt` pins `tensorflow==2.16.1` and `keras==3.13.2`. Installing TensorFlow alone pulls newer Keras versions that may fail to read older checkpoints. Always install via requirements:
 
 ```bash
-python notebooks/train_models.py --data Articles.csv --out saved_models
+pip install -r requirements.txt
+
 ```
-
-This trains all three architectures and writes everything the app needs:
-
-| File | Purpose |
-|------|---------|
-| `next_word_lstm_best.keras` | LSTM model (default) |
-| `next_word_gru_best.keras` | GRU model |
-| `next_word_rnn_best.keras` | SimpleRNN baseline |
-| `tokenizer.pkl` | fitted tokenizer, shared by all three |
-| `config.json` | context length + hyperparameters |
-| `comparison.json` / `.csv` | metrics table for the video |
-| `training_curves.png` | validation loss/accuracy curves |
-
-The app serves whichever architectures it finds on disk — a single LSTM
-artifact still works exactly as before.
-
-Use `notebooks/export_artifacts.py` — paste its block into your notebook after
-training to produce all three files.
 
 ---
 
-## 2. Run locally
+## 🏃 Running Locally
+
+Start the development server using Uvicorn:
 
 ```bash
 uvicorn app.main:app --reload
-# or
-python app/main.py
+
 ```
 
-- UI: <http://localhost:8000/>
-- Interactive API docs: <http://localhost:8000/docs>
-- Health: <http://localhost:8000/health>
+* **Web Interface:** [http://localhost:8000/](http://localhost:8000/)
+* **Interactive API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
-## 3. API guide
+## 🔌 API Endpoints & Usage
 
 ### `POST /predict`
-Predict the top-k next words.
 
-**Request**
+Predict the top-$k$ next words for a given text snippet.
+
+**Request Body:**
+
 ```json
-{ "text": "the stock market", "top_k": 5 }
+{
+  "text": "the stock market",
+  "top_k": 5,
+  "model": "lstm"
+}
+
 ```
-**Response**
+
+**Response:**
+
 ```json
 {
   "input": "the stock market",
+  "model_used": "lstm",
   "predictions": [
     { "word": "rose", "probability": 0.41 },
-    { "word": "fell", "probability": 0.22 }
+    { "word": "fell", "probability": 0.22 },
+    { "word": "opened", "probability": 0.12 }
   ]
 }
+
 ```
 
 ### `POST /generate`
-Generate a multi-word continuation.
 
-**Request**
+Generate multi-word text continuations from a seed phrase.
+
+**Request Body:**
+
 ```json
-{ "text": "the government has decided to", "num_words": 14, "temperature": 0.7 }
+{
+  "text": "the government has decided to",
+  "num_words": 10,
+  "temperature": 0.7,
+  "model": "lstm"
+}
+
 ```
-**Response**
+
+**Response:**
+
 ```json
 {
   "input": "the government has decided to",
-  "generated_text": "the government has decided to raise fuel prices ...",
-  "num_words": 14,
+  "generated_text": "the government has decided to implement new economic reforms across sectors...",
+  "num_words": 10,
   "temperature": 0.7
 }
+
 ```
 
 ### `GET /health`
+
+Returns system status and model readiness.
+
 ```json
-{ "status": "ok", "model_loaded": true, "context_length": 15, "vocab_size": 5001 }
+{
+  "status": "ok",
+  "model_loaded": true,
+  "active_model": "lstm",
+  "context_length": 15,
+  "vocab_size": 5001
+}
+
 ```
 
-**curl example**
+### `GET /models`
+
+Lists all available trained model architectures loaded in memory.
+
+**cURL Example:**
+
 ```bash
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
-  -d '{"text":"the stock market","top_k":5}'
+  -d '{"text":"artificial intelligence is","top_k":3}'
+
 ```
 
-Validation is automatic: empty/whitespace text, `top_k` out of `[1,20]`,
-`num_words` out of `[1,50]`, or `temperature` out of `[0,2]` return `422`.
+---
+
+## 📦 Model Training & Artifacts
+
+To train the models from scratch using your own corpus:
+
+```bash
+python notebooks/train_models.py --data data/Articles.csv --out saved_models
+
+```
+
+### Artifact Specifications
+
+* **Model Checkpoints:** Saved as `next_word_lstm_best.keras`, `next_word_gru_best.keras`, and `next_word_rnn_best.keras`.
+* **Tokenizer:** Serialised using `pickle` as `tokenizer.pkl`, persisting the complete vocabulary mapping (`word_index` / `index_word`).
+* **Configuration:** `config.json` preserves context length and hyperparameter settings to guarantee preprocessing parity.
 
 ---
 
-## 4. Model artifacts
+## 🧪 Testing
 
-- **Save model:** `model.save("saved_models/next_word_lstm_best.keras")`
-  (or let `ModelCheckpoint` write it during training).
-- **Save tokenizer:** `pickle.dump(tokenizer, open("saved_models/tokenizer.pkl","wb"))`.
-- **Save vocabulary:** the vocabulary lives inside the tokenizer
-  (`word_index` / `index_word`), so persisting the tokenizer persists the vocab.
-- **Save config:** `config.json` stores `context_length` so preprocessing is
-  reproduced exactly (if absent, it is inferred from the model's input shape).
-- **Load:** all three are loaded once at startup and cached
-  (`app/models/model_loader.py`).
-
----
-
-## 5. Testing
+Run the automated test suite using `pytest`:
 
 ```bash
 pytest
+
 ```
 
-The suite runs **without TensorFlow or real artifacts** by injecting fake
-model/tokenizer objects: preprocessing, predictor logic (top-k ordering, greedy
-determinism, OOV stop, seeded sampling), API responses, and input validation.
+The tests validate tokenisation normalisation, sequence padding, predictor logic (top-$k$ ranking, OOV handling, temperature sampling), and FastAPI endpoint validation schemas.
 
 ---
 
-## 6. Deployment
+## 🚢 Deployment
 
-### Docker (local or any host)
+### Docker Containerisation
+
 ```bash
 docker build -t next-word-predictor .
 docker run -p 8000:8000 next-word-predictor
-```
-The image reads `$PORT` if set (defaults to 8000).
 
-### Render
-Push to a Git repo and create a **Web Service** (uses `render.yaml`), or set:
-- Build: `pip install -r requirements.txt`
-- Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-
-### Railway
-Railway detects the `Procfile`:
 ```
+
+*(The container automatically detects the `$PORT` environment variable).*
+
+### Render & Railway
+
+* **Render:** Connect your GitHub repository and configure using `render.yaml`.
+* **Railway:** Deploy directly using the provided `Procfile`:
+```text
 web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-```
-Add the artifacts to `saved_models/` (or mount a volume / object storage).
 
-### Notes for all hosts
-- TensorFlow images are large; prefer a plan with adequate memory.
-- Model + tokenizer are loaded once at startup (cached singleton).
-- Configure paths via `MODEL_PATH`, `TOKENIZER_PATH`, `CONFIG_PATH` env vars.
+```
+
+
 
 ---
 
-## Why FastAPI (vs Flask)?
+## 🛠️ Technology Stack
 
-See `docs/ARCHITECTURE_REVIEW.md`. In short: built-in Pydantic validation
-(the assessment requires input validation), automatic OpenAPI docs, async I/O,
-and first-class typing make FastAPI the better fit here. A Flask port is
-straightforward if required (swap the router layer; the service/model/utils
-modules are framework-agnostic).
-#
+| Technology | Purpose |
+| --- | --- |
+| **Python** | Core Programming Language |
+| **FastAPI** | High-Performance REST API & OpenAPI Docs |
+| **TensorFlow / Keras** | Deep Learning Framework & Recurrent Networks |
+| **Uvicorn** | ASGI Web Server |
+| **Bootstrap 5** | Responsive Frontend UI Framework |
+| **Docker** | Containerisation & Environment Isolation |
+| **Pytest** | Automated Testing Framework |
+| **Git / GitHub** | Version Control & Collaboration |
+
+---
+
+## 🎯 Project Outcomes
+
+* ✅ Successfully trained and compared **LSTM, GRU, and SimpleRNN** architectures on text corpora.
+* ✅ Developed a robust inference pipeline with exact preprocessing parity.
+* ✅ Built an intuitive, responsive single-page web interface.
+* ✅ Exposed clean, validated endpoints via **FastAPI** with automatic documentation.
+* ✅ Successfully packaged and containerised the application for cloud deployment.
+
+---
+
+### 🌟 Predict Smarter. Code Faster. Automate Natural Language.
+
+⭐ If you found this project useful, consider giving the repository a star!
