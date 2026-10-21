@@ -1,30 +1,26 @@
-# ✍️ Next-Word Prediction System — Intelligent NLP Web Application
+# Next-Word Prediction System — Intelligent NLP Web Application
+
+A production-style deep learning web application serving trained next-word prediction models over a high-performance FastAPI REST backend with a responsive Bootstrap UI.
 
 ---
 
-## 🚀 Live Application
+## Overview
 
-🔗 [Next-Word Prediction Live Demo](https://www.google.com/search?q=https://your-live-demo-url.onrender.com)
-
----
-
-## 📖 Overview
-
-**Next-Word Prediction System** is an advanced natural language processing (NLP) application designed to predict subsequent words and generate fluent text continuations based on deep learning sequence models.
+Next-Word Prediction System is an advanced natural language processing (NLP) application designed to predict subsequent words and generate fluent text continuations based on deep learning sequence models.
 
 The system incorporates three distinct recurrent neural network architectures trained on an identical text corpus with rigorous preprocessing:
 
-* 🧠 **LSTM (Long Short-Term Memory)** — Default architecture optimized for long-range dependencies
-* 🔄 **GRU (Gated Recurrent Unit)** — Balanced architecture offering fast training and high efficiency
-* ⚡ **SimpleRNN** — Baseline recurrent architecture for comparative performance
+* **LSTM (Long Short-Term Memory)** - Default architecture optimized for long-range dependencies
+* **GRU (Gated Recurrent Unit)** - Balanced architecture offering fast training and high efficiency
+* **SimpleRNN** - Baseline recurrent architecture for comparative performance
 
-Instead of retraining on the fly, the application loads pre-trained `.keras` model artifacts and pickled tokenizers, ensuring instantaneous response times and faithful reproduction of notebook preprocessing, top-$k$ prediction, and temperature-sampling logic.
+Instead of retraining on the fly, the application loads pre-trained `.keras` model artifacts and pickled tokenizers, ensuring instantaneous response times and faithful reproduction of notebook preprocessing, top-k prediction, and temperature-sampling logic.
 
 ---
 
-## ✨ Features
+## Features
 
-* **Next-Word Prediction:** Input any sentence or phrase to predict the top-$k$ most probable next words with associated confidence probabilities.
+* **Next-Word Prediction:** Input any sentence or phrase to predict the top-k most probable next words with associated confidence probabilities.
 * **Dynamic Model Switching:** Switch seamlessly between LSTM, GRU, and SimpleRNN architectures per request via the UI dropdown or API field.
 * **Multi-Word Text Generation:** Generate extended token continuations from an arbitrary text seed.
 * **Adjustable Temperature Sampling:** Control output creativity ($T = 0$ for greedy deterministic decoding, higher values for diverse sampling).
@@ -35,7 +31,7 @@ Instead of retraining on the fly, the application loads pre-trained `.keras` mod
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 ```text
                   USER INPUT
@@ -78,7 +74,7 @@ Instead of retraining on the fly, the application loads pre-trained `.keras` mod
 
 ---
 
-## 🏗️ Project Architecture & Layout
+## Project Architecture & Layout
 
 ```text
 next_word_predictor/
@@ -105,7 +101,7 @@ next_word_predictor/
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -125,7 +121,7 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 ### 3. Install Dependencies
 
-> ⚠️ **Important Note on Keras Version:** The `.keras` artifacts were trained and exported using **Keras 3.13.2**. `requirements.txt` pins `tensorflow==2.16.1` and `keras==3.13.2`. Installing TensorFlow alone pulls newer Keras versions that may fail to read older checkpoints. Always install via requirements:
+> **Important Note on Keras Version:** The `.keras` artifacts were trained and exported using **Keras 3.13.2**. `requirements.txt` pins `tensorflow==2.16.1` and `keras==3.13.2`. Installing TensorFlow alone pulls newer Keras versions that may fail to read older checkpoints. Always install via requirements:
 
 ```bash
 pip install -r requirements.txt
@@ -134,7 +130,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🏃 Running Locally
+## Running Locally
 
 Start the development server using Uvicorn:
 
@@ -149,11 +145,11 @@ uvicorn app.main:app --reload
 
 ---
 
-## 🔌 API Endpoints & Usage
+## API Endpoints & Usage
 
 ### `POST /predict`
 
-Predict the top-$k$ next words for a given text snippet.
+Predict the top-k next words for a given text snippet.
 
 **Request Body:**
 
@@ -239,7 +235,7 @@ curl -X POST http://localhost:8000/predict \
 
 ---
 
-## 📦 Model Training & Artifacts
+## Model Training & Artifacts
 
 To train the models from scratch using your own corpus:
 
@@ -256,7 +252,7 @@ python notebooks/train_models.py --data data/Articles.csv --out saved_models
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run the automated test suite using `pytest`:
 
@@ -265,11 +261,11 @@ pytest
 
 ```
 
-The tests validate tokenisation normalisation, sequence padding, predictor logic (top-$k$ ranking, OOV handling, temperature sampling), and FastAPI endpoint validation schemas.
+The tests validate tokenisation normalisation, sequence padding, predictor logic (top-k ranking, OOV handling, temperature sampling), and FastAPI endpoint validation schemas.
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### Docker Containerisation
 
@@ -294,7 +290,7 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 | --- | --- |
@@ -309,16 +305,18 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 
 ---
 
-## 🎯 Project Outcomes
+## Project Outcomes
 
-* ✅ Successfully trained and compared **LSTM, GRU, and SimpleRNN** architectures on text corpora.
-* ✅ Developed a robust inference pipeline with exact preprocessing parity.
-* ✅ Built an intuitive, responsive single-page web interface.
-* ✅ Exposed clean, validated endpoints via **FastAPI** with automatic documentation.
-* ✅ Successfully packaged and containerised the application for cloud deployment.
+* Successfully trained and compared **LSTM, GRU, and SimpleRNN** architectures on text corpora.
+* Developed a robust inference pipeline with exact preprocessing parity.
+* Built an intuitive, responsive single-page web interface.
+* Exposed clean, validated endpoints via **FastAPI** with automatic documentation.
+* Successfully packaged and containerised the application for cloud deployment.
 
 ---
 
-### 🌟 Predict Smarter. Code Faster. Automate Natural Language.
+### Predict Smarter. Code Faster. Automate Natural Language.
 
-⭐ If you found this project useful, consider giving the repository a star!
+If you found this project useful, consider giving the repository a star!
+
+---
