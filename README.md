@@ -4,6 +4,18 @@ A production-style deep learning web application serving trained next-word predi
 
 ---
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Web_API-005571?style=for-the-badge&logo=fastapi&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Deep_Learning-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras-RNN_%7C_LSTM_%7C_GRU-D00000?style=for-the-badge&logo=keras&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-Testing-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+
+<p align="center">
+  <b>A production-style deep learning web application designed to serve trained next-word prediction models (LSTM, GRU, and SimpleRNN) over a high-performance FastAPI backend with dynamic model switching and temperature sampling.</b>
+</p>
+
+---
 ## Overview
 
 Next-Word Prediction System is an advanced natural language processing (NLP) application designed to predict subsequent words and generate fluent text continuations based on deep learning sequence models.
